@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Go4LunchApp</string>
+    <string name="bienvenue_sur_go4lunch">Bienvenue sur Go4Lunch</string>
+    <string name="se_connecter_avec_facebook">se connecter avec Facebook</string>
+    <string name="se_connecter_avec_google">se connecter avec Google</string>
 </resources>
