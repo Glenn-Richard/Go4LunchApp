@@ -3,4 +3,9 @@
     <string name="bienvenue_sur_go4lunch">Bienvenue sur Go4Lunch</string>
     <string name="se_connecter_avec_facebook">se connecter avec Facebook</string>
     <string name="se_connecter_avec_google">se connecter avec Google</string>
+
+    //Facebook Auth values
+    <string name="facebook_app_id">725709999079870</string>
+    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="facebook_client_token">56789</string>
 </resources>
