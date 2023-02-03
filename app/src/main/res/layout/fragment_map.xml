@@ -5,13 +5,9 @@
     tools:context="fragments.MapFragment"
     android:background="@color/blue">
 
-    <TextView
+    <FrameLayout
+        android:id="@+id/map_fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="40sp"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textAllCaps="true"
-        android:text="@string/map" />
+        android:layout_height="match_parent"/>
 
 </FrameLayout>
