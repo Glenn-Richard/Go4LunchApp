@@ -3,27 +3,51 @@ package com.example.go4lunchapp;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.go4lunchapp.databinding.ActivityMainBinding;
+import com.google.android.material.navigation.NavigationView;
+
+import java.util.Objects;
 
 import fragments.MapFragment;
 import fragments.RestaurantsFragment;
 import fragments.WorkmatesFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     ActivityMainBinding binding;
 
+    DrawerLayout drawerLayout;
+
+    ActionBarDrawerToggle toggle;
+
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        toggle = new ActionBarDrawerToggle(this,drawerLayout,R.string.open_nav,R.string.close_nav);
+        drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
         replaceFragment(new MapFragment());
 
         binding.bottomNavbar.setOnItemSelectedListener(item -> {
@@ -53,5 +77,34 @@ public class MainActivity extends AppCompatActivity {
                 replaceFragment(new WorkmatesFragment());
                 break;
         }
+
+    }
+    @SuppressLint("NonConstantResourceId")
+    private void drawerItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case R.id.your_lunch:
+                Toast.makeText(getApplicationContext(),"Your lunch",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.settings:
+                Toast.makeText(getApplicationContext(),"Settings",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.logout:
+                Toast.makeText(getApplicationContext(),"Log out",Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        drawerItemSelected(item);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (toggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return true;
     }
 }
