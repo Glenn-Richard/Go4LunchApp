@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="facebook_color">#3b5998</color>
     <color name="google_color">#db4a39</color>
+    <color name="orange">#FF5733</color>
+    <color name="blue">#2341E7</color>
+    <color name="green">#159C2C</color>
 </resources>
