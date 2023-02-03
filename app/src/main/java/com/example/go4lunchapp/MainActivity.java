@@ -3,6 +3,7 @@ package com.example.go4lunchapp;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.go4lunchapp.databinding.ActivityMainBinding;
+import com.facebook.AccessToken;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.google.android.material.navigation.NavigationView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -27,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ActivityMainBinding binding;
 
     DrawerLayout drawerLayout;
+    TextView drawer_name;
 
     ActionBarDrawerToggle toggle;
 
@@ -38,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(binding.getRoot());
 
         drawerLayout = findViewById(R.id.drawer_layout);
+        drawer_name = findViewById(R.id.currentUser_name);
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
@@ -106,5 +115,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }
         return true;
+    }
+    private void getCurrentUser(){
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                try {
+                    String fullName = object.getString("name");
+                    String url = object
+                            .getJSONObject("picture")
+                            .getJSONObject("data")
+                            .getString("url");
+                    drawer_name.setText(fullName);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

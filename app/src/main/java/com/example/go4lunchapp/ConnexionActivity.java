@@ -1,5 +1,7 @@
 package com.example.go4lunchapp;
 
+import static android.provider.ContactsContract.Intents.Insert.EMAIL;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -10,11 +12,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
+import java.util.Collections;
 
 public class ConnexionActivity extends AppCompatActivity {
 
@@ -29,14 +36,22 @@ public class ConnexionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connexion);
 
-        Button btn_facebook = findViewById(R.id.btn_connexion_facebook);
+        LoginButton btn_facebook = findViewById(R.id.btn_connexion_facebook);
         Button btn_google = findViewById(R.id.btn_connexion_google);
 
         callbackManager = CallbackManager.Factory.create();
 
+        FacebookSdk.setApplicationId(getString(R.string.facebook_app_id));
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
+        btn_facebook.setReadPermissions(EMAIL);
+
         google_request();
 
-        btn_facebook.setOnClickListener(view -> facebookAuth());
+        facebookAuth();
+
+        btn_facebook.setOnClickListener(view -> facebookLoginManager());
 
         btn_google.setOnClickListener(view -> google_signIn());
     }
@@ -62,7 +77,7 @@ public class ConnexionActivity extends AppCompatActivity {
     private void google_request(){
         //Google Auth values
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken("826691239241-g3ru4g50vv4g0dkvj41fjk2adqt0iube.apps.googleusercontent.com")
                 .requestEmail()
                 .build();
 
@@ -75,6 +90,9 @@ public class ConnexionActivity extends AppCompatActivity {
     private void mainActivity() {
         startActivity(new Intent(ConnexionActivity.this,MainActivity.class));
     }
+    private void facebookLoginManager(){
+        LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         callbackManager.onActivityResult(requestCode, resultCode, data);
@@ -83,4 +101,5 @@ public class ConnexionActivity extends AppCompatActivity {
             mainActivity();
         }
     }
+    //Facebook auth to correct
 }

@@ -6,8 +6,9 @@
 
     //Facebook Auth values
     <string name="facebook_app_id">725709999079870</string>
-    <string name="fb_login_protocol_scheme">fb1234</string>
+    <string name="fb_login_protocol_scheme">fb725709999079870</string>
     <string name="facebook_client_token">56789</string>
+
     <string name="map">map</string>
     <string name="restaurants">restaurants</string>
     <string name="workmates">workmates</string>
@@ -18,4 +19,5 @@
     <string name="user_profile">User profile</string>
     <string name="open_nav">nav open</string>
     <string name="close_nav">close nav</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
