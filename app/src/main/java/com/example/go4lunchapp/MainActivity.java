@@ -17,11 +17,9 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.go4lunchapp.databinding.ActivityMainBinding;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.google.android.material.navigation.NavigationView;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -118,19 +116,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
     private void getCurrentUser(){
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-                try {
-                    String fullName = object.getString("name");
-                    String url = object
-                            .getJSONObject("picture")
-                            .getJSONObject("data")
-                            .getString("url");
-                    drawer_name.setText(fullName);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+        GraphRequest request = GraphRequest.newMeRequest(accessToken, (object, response) -> {
+            try {
+                String fullName = object.getString("name");
+                String url = object
+                        .getJSONObject("picture")
+                        .getJSONObject("data")
+                        .getString("url");
+                drawer_name.setText(fullName);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         });
     }

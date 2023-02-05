@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Go4LunchApp</string>
     <string name="bienvenue_sur_go4lunch">Bienvenue sur Go4Lunch</string>
     <string name="se_connecter_avec_facebook">se connecter avec Facebook</string>
@@ -8,6 +8,10 @@
     <string name="facebook_app_id">725709999079870</string>
     <string name="fb_login_protocol_scheme">fb725709999079870</string>
     <string name="facebook_client_token">56789</string>
+
+    //Google API keys
+    <string name="google_map_key">AIzaSyDOBddcSKOqcEQ5HzeDySmC2vAQw9130lU</string>
+    <string name="google_place_key" tools:ignore="Typos">AIzaSyDu_b1WHImUbpk593yksTIpdcJJ3JjVwVY</string>
 
     <string name="map">map</string>
     <string name="restaurants">restaurants</string>

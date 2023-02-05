@@ -6,18 +6,24 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.go4lunchapp.R;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,12 +32,26 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import utils.GetNearbyPlaces;
 
-public class MapFragment extends Fragment implements OnMapReadyCallback {
 
-    SupportMapFragment mapFragment;
+public class MapFragment extends Fragment implements
+        OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener,
+        LocationListener {
 
-    FusedLocationProviderClient client;
+    private SupportMapFragment mapFragment;
+
+    private FusedLocationProviderClient client;
+
+    private GoogleMap gMap;
+
+    private Double lat;
+    private Double lng;
+
+
+    protected static final int REQUEST_CODE = 44;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -60,13 +80,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                     Location location = task.getResult();
                     if(location!=null){
                         mapFragment.getMapAsync(googleMap -> {
+                            gMap = googleMap;
+                            lat = location.getLatitude();
+                            lng = location.getLongitude();
                             LatLng latLng = new LatLng(location.getLatitude(),
                                     location.getLongitude());
                             MarkerOptions markerOptions = new MarkerOptions()
                                     .position(latLng)
-                                    .title("current position");
+                                    .title("Vous êtes ici");
                             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                             googleMap.addMarker(markerOptions);
+
+                            getNearbyRestaurants(lat,lng);
                         });
                     }
                 });
@@ -74,14 +99,41 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         }else{
             ActivityCompat
                     .requestPermissions(requireActivity(),
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},44);
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_CODE);
         }
+    }
+    private String getUrl(double lat,double lng,String restaurant){
+        StringBuilder googleUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googleUrl.append("location=").append(lat).append(",").append(lng);
+        int radiusSearch = 1000;
+        googleUrl.append("&radius=").append(radiusSearch);
+        googleUrl.append("&type=").append(restaurant);
+        googleUrl.append("&sensor=true");
+        googleUrl.append("&key=").append(getString(R.string.google_place_key));
+
+        Log.d("GoogleMapFragment","url = "+ googleUrl);
+
+        return googleUrl.toString();
+    }
+    private void getNearbyRestaurants(double latitude,double longitude){
+
+        Toast.makeText(getContext(),"Searching for nearby restaurants...",Toast.LENGTH_SHORT).show();
+
+        String restaurant = "restaurant";
+        Object[] transferData = new Object[2];
+        GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
+        String url = getUrl(latitude,longitude,restaurant);
+        transferData[0] = gMap;
+        transferData[1] = url;
+
+        Toast.makeText(getContext(),"Showing nearby restaurants",Toast.LENGTH_SHORT).show();
+        getNearbyPlaces.execute(transferData);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode==44){
+        if (requestCode==REQUEST_CODE){
             if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
                 getCurrentLocation();
             }
@@ -90,5 +142,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+
     }
 }
