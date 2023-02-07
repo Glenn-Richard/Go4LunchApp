@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,10 +30,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import utils.GetNearbyPlaces;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+
+import utils.DataParser;
+import utils.DownloadUrl;
 
 
 public class MapFragment extends Fragment implements
@@ -120,7 +129,7 @@ public class MapFragment extends Fragment implements
         Toast.makeText(getContext(),"Searching for nearby restaurants...",Toast.LENGTH_SHORT).show();
 
         String restaurant = "restaurant";
-        Object[] transferData = new Object[2];
+        Object[] transferData = new Object[3];
         GetNearbyPlaces getNearbyPlaces = new GetNearbyPlaces();
         String url = getUrl(latitude,longitude,restaurant);
         transferData[0] = gMap;
@@ -129,7 +138,16 @@ public class MapFragment extends Fragment implements
         Toast.makeText(getContext(),"Showing nearby restaurants",Toast.LENGTH_SHORT).show();
         getNearbyPlaces.execute(transferData);
     }
+    private void sendDataToRestaurantFragment(List<HashMap<String, String>> dataList){
 
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("restaurants", (Serializable) dataList);
+
+        getParentFragmentManager().setFragmentResult("restaurants",bundle);
+
+
+
+    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -161,6 +179,59 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
+
+    }
+    public class GetNearbyPlaces extends AsyncTask<Object,String,String> {
+
+        private String googlePlaceData;
+        private GoogleMap googleMap;
+
+        @Override
+        protected String doInBackground(Object... objects) {
+            googleMap = (GoogleMap) objects[0];
+            String url = (String) objects[1];
+
+            DownloadUrl downloadUrl = new DownloadUrl();
+            try {
+                googlePlaceData = downloadUrl.readTheUrl(url);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return googlePlaceData;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            List<HashMap<String,String>> nearbyPlacesList;
+            DataParser dataParser = new DataParser();
+            nearbyPlacesList = dataParser.parse(s);
+            displayNearbyPlaces(nearbyPlacesList);
+        }
+        private void displayNearbyPlaces(List<HashMap<String,String>> nearbyPlacesList){
+
+            sendDataToRestaurantFragment(nearbyPlacesList);
+
+            for (int i=0;i<nearbyPlacesList.size()-1;i++){
+                MarkerOptions markerOptions = new MarkerOptions();
+
+                HashMap<String,String> googleNearbyPLace = nearbyPlacesList.get(i);
+                String nameOfPlace = googleNearbyPLace.get("place_name");
+                String vicinity = googleNearbyPLace.get("vicinity");
+                Log.d("VALUE_OF_LAT",googleNearbyPLace.get("lat"));
+                double lat = Double.parseDouble((Objects.requireNonNull(googleNearbyPLace.get("lat"))));
+                double lng = Double.parseDouble((Objects.requireNonNull(googleNearbyPLace.get("lng"))));
+
+                LatLng latLng = new LatLng(lat,lng);
+
+                markerOptions.position(latLng);
+                markerOptions.title(nameOfPlace+" : "+vicinity);
+                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                googleMap.addMarker(markerOptions);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            }
+        }
+
 
     }
 }

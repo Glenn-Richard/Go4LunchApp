@@ -15,11 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.go4lunchapp.databinding.ActivityMainBinding;
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
 import com.google.android.material.navigation.NavigationView;
-
-import org.json.JSONException;
 
 import java.util.Objects;
 
@@ -66,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.frame_layout,fragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -109,24 +106,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)){
-            return true;
-        }
+        toggle.onOptionsItemSelected(item);
         return true;
-    }
-    private void getCurrentUser(){
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        GraphRequest request = GraphRequest.newMeRequest(accessToken, (object, response) -> {
-            try {
-                String fullName = object.getString("name");
-                String url = object
-                        .getJSONObject("picture")
-                        .getJSONObject("data")
-                        .getString("url");
-                drawer_name.setText(fullName);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        });
     }
 }

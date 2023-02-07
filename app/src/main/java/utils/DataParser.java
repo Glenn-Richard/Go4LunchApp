@@ -15,9 +15,10 @@ public class DataParser {
         HashMap<String,String> googlePlaceMap = new HashMap<>();
         String nameOfPlace = "-NA-";
         String vicinity = "-NA-";
+        String photo_reference;
+        JSONArray photos;
         String latitude;
         String longitude;
-        String reference;
 
         try {
             if (!googlePlaceJSON.isNull("name")){
@@ -26,15 +27,16 @@ public class DataParser {
             if (!googlePlaceJSON.isNull("vicinity")){
                 vicinity = googlePlaceJSON.getString("vicinity");
             }
+            photos = googlePlaceJSON.getJSONArray("photos");
+            photo_reference = photos.optJSONObject(0).getString("photo_reference");
             latitude = googlePlaceJSON.getJSONObject("geometry").getJSONObject("location").getString("lat");
             longitude = googlePlaceJSON.getJSONObject("geometry").getJSONObject("location").getString("lng");
-            reference = googlePlaceJSON.getString("reference");
 
             googlePlaceMap.put("place_name",nameOfPlace);
             googlePlaceMap.put("vicinity",vicinity);
+            googlePlaceMap.put("photo_reference",photo_reference);
             googlePlaceMap.put("lat",latitude);
             googlePlaceMap.put("lng",longitude);
-            googlePlaceMap.put("reference",reference);
         } catch (JSONException e) {
             e.printStackTrace();
         }

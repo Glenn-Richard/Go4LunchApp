@@ -3,15 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="fragments.RestaurantsFragment"
-    android:background="@color/green">
+    android:id="@+id/restaurant_fragment">
 
     <TextView
+        android:id="@+id/testing"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/restaurant_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="40sp"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textAllCaps="true"
-        android:text="@string/restaurants"/>
-
+        tools:listitem="@layout/list_item"/>
 </FrameLayout>

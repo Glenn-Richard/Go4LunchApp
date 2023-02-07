@@ -11,7 +11,7 @@
 
     //Google API keys
     <string name="google_map_key">AIzaSyDOBddcSKOqcEQ5HzeDySmC2vAQw9130lU</string>
-    <string name="google_place_key" tools:ignore="Typos">AIzaSyDu_b1WHImUbpk593yksTIpdcJJ3JjVwVY</string>
+    <string name="google_place_key">AIzaSyDu_b1WHImUbpk593yksTIpdcJJ3JjVwVY</string>
 
     <string name="map">map</string>
     <string name="restaurants">restaurants</string>
@@ -24,4 +24,13 @@
     <string name="open_nav">nav open</string>
     <string name="close_nav">close nav</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="restaurant_name">Name</string>
+    <string name="restaurant_adress">Restaurant address</string>
+    <string name="opening">Opening</string>
+    <string name="restaurant_photo">restaurant_photo</string>
+    <string name="distance">distance</string>
+    <string name="count">(0)</string>
+    <string name="star1" tools:ignore="Typos">star1</string>
+    <string name="star2">star2</string>
+    <string name="star3">star3</string>
 </resources>
