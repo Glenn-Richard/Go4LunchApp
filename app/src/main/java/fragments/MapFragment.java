@@ -3,6 +3,9 @@ package fragments;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
@@ -16,10 +19,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.go4lunchapp.MainActivity;
 import com.example.go4lunchapp.R;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -30,12 +35,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -73,9 +80,11 @@ public class MapFragment extends Fragment implements
             mapFragment = SupportMapFragment.newInstance();
             fragmentTransaction.replace(R.id.map_fragment,mapFragment).commit();
         }
+
         client = LocationServices.getFusedLocationProviderClient(requireActivity());
         mapFragment.getMapAsync(this);
         getCurrentLocation();
+
         return inflater.inflate(R.layout.fragment_map, container, false);
     }
 
@@ -96,8 +105,9 @@ public class MapFragment extends Fragment implements
                                     location.getLongitude());
                             MarkerOptions markerOptions = new MarkerOptions()
                                     .position(latLng)
+                                    .icon(bitmapDescriptorFromVector(getActivity(),R.drawable.ic_baseline_man_4_24))
                                     .title("Vous êtes ici");
-                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,20));
                             googleMap.addMarker(markerOptions);
 
                             getNearbyRestaurants(lat,lng);
@@ -124,6 +134,14 @@ public class MapFragment extends Fragment implements
 
         return googleUrl.toString();
     }
+    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
+        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
+        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
     private void getNearbyRestaurants(double latitude,double longitude){
 
         Toast.makeText(getContext(),"Searching for nearby restaurants...",Toast.LENGTH_SHORT).show();
@@ -138,14 +156,14 @@ public class MapFragment extends Fragment implements
         Toast.makeText(getContext(),"Showing nearby restaurants",Toast.LENGTH_SHORT).show();
         getNearbyPlaces.execute(transferData);
     }
-    private void sendDataToRestaurantFragment(List<HashMap<String, String>> dataList){
+    private void sendDataToRestaurantFragment(List<HashMap<String, String>> dataList,double lat,double lng){
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("restaurants", (Serializable) dataList);
+        bundle.putSerializable("lat",lat);
+        bundle.putSerializable("lng",lng);
 
         getParentFragmentManager().setFragmentResult("restaurants",bundle);
-
-
 
     }
     @Override
@@ -157,16 +175,14 @@ public class MapFragment extends Fragment implements
             }
         }
     }
-
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
-    }
 
+    }
     @Override
     public void onConnected(@Nullable Bundle bundle) {
 
     }
-
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -179,8 +195,8 @@ public class MapFragment extends Fragment implements
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
-
     }
+
     public class GetNearbyPlaces extends AsyncTask<Object,String,String> {
 
         private String googlePlaceData;
@@ -199,7 +215,6 @@ public class MapFragment extends Fragment implements
             }
             return googlePlaceData;
         }
-
         @Override
         protected void onPostExecute(String s) {
             List<HashMap<String,String>> nearbyPlacesList;
@@ -209,29 +224,37 @@ public class MapFragment extends Fragment implements
         }
         private void displayNearbyPlaces(List<HashMap<String,String>> nearbyPlacesList){
 
-            sendDataToRestaurantFragment(nearbyPlacesList);
-
             for (int i=0;i<nearbyPlacesList.size()-1;i++){
                 MarkerOptions markerOptions = new MarkerOptions();
 
                 HashMap<String,String> googleNearbyPLace = nearbyPlacesList.get(i);
                 String nameOfPlace = googleNearbyPLace.get("place_name");
                 String vicinity = googleNearbyPLace.get("vicinity");
-                Log.d("VALUE_OF_LAT",googleNearbyPLace.get("lat"));
+                boolean opening = false;
+                if(!googleNearbyPLace.containsValue("opening_hours")){
+                    opening = Boolean.parseBoolean(googleNearbyPLace.get("opening_hours"));
+                }
                 double lat = Double.parseDouble((Objects.requireNonNull(googleNearbyPLace.get("lat"))));
                 double lng = Double.parseDouble((Objects.requireNonNull(googleNearbyPLace.get("lng"))));
+
+                sendDataToRestaurantFragment(nearbyPlacesList,lat,lng);
 
                 LatLng latLng = new LatLng(lat,lng);
 
                 markerOptions.position(latLng);
-                markerOptions.title(nameOfPlace+" : "+vicinity);
-                markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN));
+                if (opening){
+                    String open = "Open";
+                    markerOptions.title(nameOfPlace+" "+open);
+                    markerOptions.icon(bitmapDescriptorFromVector(getActivity(),R.drawable.ic_baseline_lunch_dining_green_24));
+                }else{
+                    String close = "Close";
+                    markerOptions.title(nameOfPlace+" "+close);
+                    markerOptions.icon(bitmapDescriptorFromVector(getActivity(),R.drawable.ic_baseline_lunch_dining_red_24));
+                }
                 googleMap.addMarker(markerOptions);
                 googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
             }
         }
-
-
     }
 }

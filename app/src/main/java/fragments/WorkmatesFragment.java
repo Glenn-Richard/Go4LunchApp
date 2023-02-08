@@ -10,6 +10,13 @@ import android.view.ViewGroup;
 
 import com.example.go4lunchapp.R;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import models.Restaurant;
+
 public class WorkmatesFragment extends Fragment {
 
     @Override
@@ -18,4 +25,7 @@ public class WorkmatesFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_workmates, container, false);
     }
+
+
+
 }

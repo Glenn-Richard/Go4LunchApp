@@ -15,10 +15,14 @@ public class DataParser {
         HashMap<String,String> googlePlaceMap = new HashMap<>();
         String nameOfPlace = "-NA-";
         String vicinity = "-NA-";
-        String photo_reference;
+        String photo_reference = null;
+        String opening;
         JSONArray photos;
         String latitude;
         String longitude;
+        String phone;
+        String website;
+        String rating;
 
         try {
             if (!googlePlaceJSON.isNull("name")){
@@ -27,10 +31,29 @@ public class DataParser {
             if (!googlePlaceJSON.isNull("vicinity")){
                 vicinity = googlePlaceJSON.getString("vicinity");
             }
+            if (!(googlePlaceJSON.isNull("opening_hours"))){
+                opening = googlePlaceJSON.getJSONObject("opening_hours").getString("open_now");
+                googlePlaceMap.put("opening_hours",opening);
+            }
+            if (!(googlePlaceJSON.isNull("formatted_phone_number"))){
+                phone = googlePlaceJSON.getString("formatted_phone_number");
+                googlePlaceMap.put("formatted_phone_number",phone);
+            }
+            if (!(googlePlaceJSON.isNull("website"))){
+                website = googlePlaceJSON.getString("website");
+                googlePlaceMap.put("website",website);
+            }
             photos = googlePlaceJSON.getJSONArray("photos");
-            photo_reference = photos.optJSONObject(0).getString("photo_reference");
+            if (!(photos.optJSONObject(0).isNull("photo_reference"))){
+                photo_reference = photos.optJSONObject(0).getString("photo_reference");
+            }
+            if (!(googlePlaceJSON.isNull("rating"))){
+                rating = googlePlaceJSON.getString("rating");
+                googlePlaceMap.put("rating",rating);
+            }
             latitude = googlePlaceJSON.getJSONObject("geometry").getJSONObject("location").getString("lat");
             longitude = googlePlaceJSON.getJSONObject("geometry").getJSONObject("location").getString("lng");
+
 
             googlePlaceMap.put("place_name",nameOfPlace);
             googlePlaceMap.put("vicinity",vicinity);

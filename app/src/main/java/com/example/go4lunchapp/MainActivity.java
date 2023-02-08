@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fragmentTransaction.commit();
     }
 
+
     @SuppressLint("NonConstantResourceId")
     private void selectItem(MenuItem item){
         switch (item.getItemId()){
@@ -109,4 +110,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.onOptionsItemSelected(item);
         return true;
     }
+
 }

@@ -10,6 +10,8 @@
     <color name="facebook_color">#3b5998</color>
     <color name="google_color">#db4a39</color>
     <color name="orange">#FF5733</color>
+    <color name="pas_d_info">#F6927D</color>
     <color name="blue">#2341E7</color>
     <color name="green">#159C2C</color>
+    <color name="red">#E72B1D</color>
 </resources>
