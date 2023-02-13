@@ -1,26 +1,62 @@
 package models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.util.List;
+
+import entities.Geometry;
+import entities.OpeningHours;
+import entities.Photo;
+
 public class Restaurant {
 
+
+    @SerializedName("name")
     private String name;
+
+    @SerializedName("vicinity")
     private String address;
-    private String photo;
+
+    @SerializedName("photos")
+    @Expose
+    List<Photo> photo;
+
     private int stars;
+
     private int number_of_workmates;
+
+    @SerializedName("geometry")
+    Geometry geometry;
+
     private double lat;
+
     private double lng;
+
     private float distance_of_current_location;
+
+    @SerializedName("formatted_phone_number")
     private String phone;
+
+    @SerializedName("rating")
     private double rating;
+
+    @SerializedName("opening_hours")
+    @Expose
+    OpeningHours opening_hours;
+
     private boolean opening;
-    private boolean no_opening_hours;
+
+    private boolean open_info;
+
+    @SerializedName("website")
     private String website;
 
     public Restaurant() {
     }
 
 
-    public Restaurant(String name, String address, String photo, int stars, int number_of_workmates, double lat, double lng, float distance_of_current_location, String phone, int rating, boolean opening, boolean no_opening_hours, String website) {
+    public Restaurant(String name, String address, List<Photo> photo, int stars, int number_of_workmates, double lat, double lng, float distance_of_current_location, String phone, int rating, boolean opening, boolean no_opening_hours, String website) {
         this.name = name;
         this.address = address;
         this.photo = photo;
@@ -32,7 +68,7 @@ public class Restaurant {
         this.phone = phone;
         this.rating = rating;
         this.opening = opening;
-        this.no_opening_hours = no_opening_hours;
+        this.open_info = no_opening_hours;
         this.website = website;
     }
 
@@ -52,11 +88,19 @@ public class Restaurant {
         this.address = address;
     }
 
-    public String getPhoto() {
+    public Geometry getGeometry() {
+        return geometry;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
+    }
+
+    public List<Photo> getPhoto() {
         return photo;
     }
 
-    public void setPhoto(String photo) {
+    public void setPhoto(List<Photo> photo) {
         this.photo = photo;
     }
 
@@ -100,6 +144,13 @@ public class Restaurant {
         this.distance_of_current_location = distance_of_current_location;
     }
 
+    public OpeningHours getOpening_hours() {
+        return opening_hours;
+    }
+
+    public void setOpening_hours(OpeningHours opening_hours) {
+        this.opening_hours = opening_hours;
+    }
     public boolean isOpening() {
         return opening;
     }
@@ -108,12 +159,12 @@ public class Restaurant {
         this.opening = opening;
     }
 
-    public boolean isNo_opening_hours() {
-        return no_opening_hours;
+    public boolean isOpen_info() {
+        return open_info;
     }
 
-    public void setNo_opening_hours(boolean no_opening_hours) {
-        this.no_opening_hours = no_opening_hours;
+    public void setOpen_info(boolean open_info) {
+        this.open_info = open_info;
     }
 
     public String getPhone() {
@@ -123,6 +174,7 @@ public class Restaurant {
     public void setPhone(String phone) {
         this.phone = phone;
     }
+
 
     public double getRating() {
         return rating;

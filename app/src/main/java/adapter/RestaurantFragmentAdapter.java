@@ -2,8 +2,7 @@ package adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunchapp.R;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
@@ -28,11 +28,13 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
     Context context;
     ArrayList<Restaurant> restaurants;
     ItemListener listener;
+    LatLng currentLocation;
 
-    public RestaurantFragmentAdapter(Context context, ArrayList<Restaurant> restaurants,ItemListener listener) {
+    public RestaurantFragmentAdapter(Context context, ArrayList<Restaurant> restaurants,ItemListener listener,LatLng currentLocation) {
         this.context = context;
         this.restaurants = restaurants;
         this.listener = listener;
+        this.currentLocation = currentLocation;
     }
 
     private String getUrl(String url){
@@ -60,24 +62,38 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
 
         holder.name.setText(restaurant.getName());
         holder.address.setText(restaurant.getAddress());
-        Glide.with(context)
-                .load(getUrl(restaurant.getPhoto()))
-                .centerCrop()
-                .into(holder.photo_restaurant);
-        holder.distance.setText((int) restaurant.getDistance_of_current_location() + "m");
-        if (restaurant.isOpening()) {
+
+        if (!(restaurant.getPhoto()==null)){
+            Glide.with(context)
+                    .load(getUrl(restaurant.getPhoto().get(0).getPhotoReference()))
+                    .centerCrop()
+                    .into(holder.photo_restaurant);
+
+        }else{
+            Glide.with(context)
+                    .load(R.drawable.unavailable_image)
+                    .centerCrop()
+                    .into(holder.photo_restaurant);
+        }
+        double lat = restaurant.getGeometry().getLocation().getLat();
+        double lng = restaurant.getGeometry().getLocation().getLng();
+
+        LatLng restaurantLocation = new LatLng(lat,lng);
+        holder.distance.setText((int) calculationByDistance(currentLocation, restaurantLocation) +"m");
+
+        if (restaurant.getOpening_hours()==null){
+            holder.opening.setText("Aucune informations");
+            holder.opening.setTextColor(ContextCompat.getColor(context, R.color.pas_d_info));
+        }
+        else if (!restaurant.getOpening_hours().getOpen_now()) {
+            holder.opening.setText("Fermé");
+            holder.opening.setTextColor(ContextCompat.getColor(context, R.color.red));
+        }
+        else{
             holder.opening.setText("Ouvert");
             holder.opening.setTextColor(ContextCompat.getColor(context, R.color.green));
         }
 
-        if (!restaurant.isOpening()) {
-            holder.opening.setText("Fermé");
-            holder.opening.setTextColor(ContextCompat.getColor(context, R.color.red));
-        }
-        if (restaurant.isNo_opening_hours()){
-            holder.opening.setText("Aucune informations");
-            holder.opening.setTextColor(ContextCompat.getColor(context, R.color.pas_d_info));
-        }
 
         holder.container.setOnClickListener(view -> listener.onItemClicked(restaurant));
 
@@ -109,6 +125,14 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
 
             container = itemView.findViewById(R.id.item_view);
         }
+    }
+    public float calculationByDistance(LatLng StartP, LatLng EndP) {
+
+        float[] result = new float[1];
+
+        Location.distanceBetween(StartP.latitude,StartP.longitude,EndP.latitude,EndP.longitude,result);
+
+        return result[0];
     }
 
 }
