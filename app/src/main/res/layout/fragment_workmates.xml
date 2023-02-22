@@ -3,14 +3,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="fragments.WorkmatesFragment"
-    android:background="@color/purple_200">
+    android:background="@color/white">
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/workmates_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textSize="40sp"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textAllCaps="true"
-        android:text="@string/workmates"/>
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/list_item_workmates"
+        />
 </FrameLayout>

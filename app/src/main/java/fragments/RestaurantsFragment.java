@@ -6,9 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,15 +19,14 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import MVVM.FirebaseViewModel;
 import adapter.RestaurantFragmentAdapter;
 import models.Restaurant;
 import utils.ItemListener;
 
 public class RestaurantsFragment extends Fragment implements ItemListener{
 
-    protected static final int REQUEST_CODE_2 = 45;
 
     RecyclerView recyclerView;
 
@@ -35,27 +35,24 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
 
     private List<Restaurant> restaurants = new ArrayList<>();
 
-
     @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Objects.requireNonNull(((AppCompatActivity) requireActivity()).getSupportActionBar()).setTitle("Restaurants");
-
         View view = inflater.inflate(R.layout.fragment_restaurants, container, false);
 
-        getDataFromMapFragment(view);
+        getDataFromMainActivity(view);
 
 
         return view;
 
     }
-    private void getDataFromMapFragment(View view){
+    private void getDataFromMainActivity(View view){
 
         getParentFragmentManager().setFragmentResultListener("restaurants", this, (requestKey, result) -> {
 
-            ArrayList<Restaurant> data = (ArrayList<Restaurant>) result.getSerializable("restaurants");
+            List<Restaurant> data = (List<Restaurant>) result.getSerializable("restaurants");
             double latitude = (double) result.getSerializable("lat");
             double longitude = (double) result.getSerializable("lng");
             lat = latitude;
@@ -77,19 +74,43 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
         recyclerView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
     }
+    private void launchDetailsActivity(Restaurant restaurant){
 
-    @Override
-    public void onItemClicked(Restaurant restaurant) {
         Intent intent = new Intent(getActivity(), DetailRestaurantActivity.class);
+
+        TextView id = requireActivity().findViewById(R.id.currentUser_id);
+        CharSequence id_text = id.getText();
+        intent.putExtra("currentUser",id_text);
         intent.putExtra("name", restaurant.getName());
+        intent.putExtra("place_id",restaurant.getPlace_id());
         intent.putExtra("address", restaurant.getAddress());
-        intent.putExtra("photo", restaurant.getPhoto().get(0).getPhotoReference());
+        if (!(restaurant.getPhoto()==null)){
+            intent.putExtra("photo", restaurant
+                    .getPhoto()
+                    .get(0)
+                    .getPhotoReference());
+        }else{
+            intent.putExtra("photo", R.mipmap.unavailable_image);
+        }
         intent.putExtra("opening", restaurant.isOpening());
         intent.putExtra("phone", restaurant.getPhone());
         intent.putExtra("website", restaurant.getWebsite());
         intent.putExtra("rating", restaurant.getRating());
 
-        startActivityForResult(intent,REQUEST_CODE_2);
+        startActivity(intent);
+    }
+    @Override
+    public void onItemClicked(Restaurant restaurant) {
+
+        new ViewModelProvider(this)
+                .get(FirebaseViewModel.class)
+                .getDetailsPlaceLiveData(restaurant.getPlace_id())
+                .observe(getViewLifecycleOwner(), detailsPlaces -> {
+                    restaurant.setPhone(detailsPlaces.getRestaurantsDetails().getPhone());
+                    restaurant.setWebsite(detailsPlaces.getRestaurantsDetails().getWebsite());
+                    launchDetailsActivity(restaurant);
+                });
+
     }
 
 }

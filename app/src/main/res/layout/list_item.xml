@@ -83,38 +83,16 @@
         app:layout_constraintStart_toEndOf="@+id/workmates_number"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/star1"
+    <RatingBar
+        android:id="@+id/simpleRatingBar"
+        android:theme="@style/RatingBar"
+        style="?android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:visibility="invisible"
-        android:src="@drawable/ic_baseline_star_24"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/restaurant_photo"
-        android:contentDescription="@string/star1" />
-
-    <ImageView
-        android:id="@+id/star2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:visibility="invisible"
-        android:src="@drawable/ic_baseline_star_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/star1"
-        android:contentDescription="@string/star2" />
-
-    <ImageView
-        android:id="@+id/star3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:visibility="invisible"
-        android:src="@drawable/ic_baseline_star_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/star2"
-        android:contentDescription="@string/star3" />
+        app:layout_constraintEnd_toStartOf="@+id/restaurant_photo" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

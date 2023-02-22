@@ -6,6 +6,7 @@
         android:title="@string/appeler" />
     <item
         android:id="@+id/favori"
+        android:checkable="false"
         android:icon="@drawable/ic_baseline_star_24"
         android:title="@string/favori" />
     <item

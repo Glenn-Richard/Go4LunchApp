@@ -10,7 +10,10 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -34,6 +37,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import java.util.Collections;
+import java.util.Objects;
+
+import MVVM.FirebaseViewModel;
 
 public class ConnexionActivity extends AppCompatActivity {
 
@@ -45,6 +51,8 @@ public class ConnexionActivity extends AppCompatActivity {
     private SignInClient oneTapClient;
 
     private FirebaseAuth auth;
+
+    private FirebaseViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,18 +66,24 @@ public class ConnexionActivity extends AppCompatActivity {
 
         callbackManager = CallbackManager.Factory.create();
 
+        setViewModel();
+
         FacebookSdk.setApplicationId(getString(R.string.facebook_app_id));
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
 
         btn_facebook.setReadPermissions(EMAIL);
 
+
         facebookAuth();
 
         btn_facebook.setOnClickListener(view -> facebookLoginManager());
 
-        btn_google.setOnClickListener(view ->
-                google_signIn());
+        btn_google.setOnClickListener(view -> signIn());
+    }
+    private void setViewModel(){
+        viewModel = new FirebaseViewModel();
+        viewModel = new ViewModelProvider(this).get(FirebaseViewModel.class);
     }
     private void oneTapSetter(){
         oneTapClient = Identity.getSignInClient(this);
@@ -106,6 +120,7 @@ public class ConnexionActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Toast.makeText(getApplicationContext(),"Connexion réussie",Toast.LENGTH_SHORT).show();
+                        firebaseAuthWithGoogle(loginResult.getAccessToken().getUserId());
                     }
 
                     @Override
@@ -128,17 +143,34 @@ public class ConnexionActivity extends AppCompatActivity {
 
         client = GoogleSignIn.getClient(this, options);
     }
-    private void google_signIn(){
+    private final ActivityResultLauncher<Intent> signInLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
 
+                try {
+                    SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
+                    String idToken = credential.getGoogleIdToken();
+                    String password = credential.getPassword();
+                    if (idToken != null) {
+                        firebaseAuthWithGoogle(idToken);
+                        Log.d(TAG, "Got ID token.");
+                    } else if (password != null) {
+                        Log.d(TAG, "Got password.");
+                    }
+                } catch (ApiException e) {
+                    Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+                }
+            });
+
+    private void signIn() {
         google_request();
-
         oneTapSetter();
-
-        Intent signIn = client.getSignInIntent();
-        startActivityForResult(signIn,REQ_ONE_TAP);
+        Intent signInIntent = client.getSignInIntent();
+        signInLauncher.launch(signInIntent);
     }
-    private void mainActivity() {
-        startActivity(new Intent(ConnexionActivity.this,MainActivity.class));
+    private void mainActivityForResult(String id){
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("id", id);
+        startActivity(intent);
     }
     private void facebookLoginManager(){
         LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
@@ -146,27 +178,22 @@ public class ConnexionActivity extends AppCompatActivity {
 
     private void firebaseAuthWithGoogle(String idToken){
         AuthCredential firebaseCredential = GoogleAuthProvider.getCredential(idToken, null);
-        Toast.makeText(this, "OK", Toast.LENGTH_SHORT).show();
         auth.signInWithCredential(firebaseCredential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         // Sign in success, update UI with the signed-in user's information
                         Log.d(TAG, "signInWithCredential:success");
+
                         FirebaseUser user = auth.getCurrentUser();
+                        viewModel.userAlreadyExist(user);
+                        mainActivityForResult(Objects.requireNonNull(user).getUid());
+
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
                     }
-                });
-    }
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser!=null){
-            mainActivity();
-        }
+                })
+                .addOnFailureListener(e -> Log.e("AUTH_EXCEPTION",e.toString()));
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -180,7 +207,6 @@ public class ConnexionActivity extends AppCompatActivity {
                 String password = credential.getPassword();
                 if (idToken != null) {
                     firebaseAuthWithGoogle(idToken);
-                    mainActivity();
                     Log.d(TAG, "Got ID token.");
                 } else if (password != null) {
                     Log.d(TAG, "Got password.");

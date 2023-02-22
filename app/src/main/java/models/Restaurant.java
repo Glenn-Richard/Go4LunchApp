@@ -11,6 +11,8 @@ import entities.Photo;
 
 public class Restaurant {
 
+    @SerializedName("place_id")
+    private String place_id;
 
     @SerializedName("name")
     private String name;
@@ -56,7 +58,8 @@ public class Restaurant {
     }
 
 
-    public Restaurant(String name, String address, List<Photo> photo, int stars, int number_of_workmates, double lat, double lng, float distance_of_current_location, String phone, int rating, boolean opening, boolean no_opening_hours, String website) {
+    public Restaurant(String place_id,String name, String address, List<Photo> photo, int stars, int number_of_workmates, double lat, double lng, float distance_of_current_location, String phone, int rating, boolean opening, boolean no_opening_hours, String website) {
+        this.place_id = place_id;
         this.name = name;
         this.address = address;
         this.photo = photo;
@@ -70,6 +73,14 @@ public class Restaurant {
         this.opening = opening;
         this.open_info = no_opening_hours;
         this.website = website;
+    }
+
+    public String getPlace_id() {
+        return place_id;
+    }
+
+    public void setPlace_id(String place_id) {
+        this.place_id = place_id;
     }
 
     public String getName() {

@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="300dp"
         android:background="#FF5722"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -19,17 +19,20 @@
         <ImageView
             android:id="@+id/photo_restaurant"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
+            android:layout_height="230dp"
             android:contentDescription="@string/restaurant_photo"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
+            android:src="@mipmap/unavailable_image"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/name_restaurant"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
-            android:layout_margin="20dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginBottom="5dp"
             android:text="@string/name"
             android:textSize="20sp"
             android:textStyle="bold"
@@ -40,22 +43,72 @@
             android:id="@+id/address_restaurant"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="20dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginStart="20dp"
             android:text="@string/textview"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/name_restaurant" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/menu_details"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="60dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/details_menu">
+        app:layout_constraintStart_toStartOf="parent">
+        <LinearLayout
+            android:id="@+id/call_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginStart="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/call_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_baseline_call_24"
+                android:contentDescription="@string/call" />
+        </LinearLayout>
 
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+        <LinearLayout
+            android:id="@+id/favorites"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:elevation="19dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/favorites_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                app:tint="@color/black"
+                android:src="@drawable/ic_baseline_star_24"
+                android:contentDescription="@string/favorites" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/website"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="50dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/website_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_baseline_web_24"
+                android:contentDescription="@string/website" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

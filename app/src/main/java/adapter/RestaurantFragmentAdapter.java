@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -71,7 +72,7 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
 
         }else{
             Glide.with(context)
-                    .load(R.drawable.unavailable_image)
+                    .load(R.mipmap.unavailable_image)
                     .centerCrop()
                     .into(holder.photo_restaurant);
         }
@@ -93,6 +94,7 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
             holder.opening.setText("Ouvert");
             holder.opening.setTextColor(ContextCompat.getColor(context, R.color.green));
         }
+        holder.ratingBar.setRating((float) restaurant.getRating());
 
 
         holder.container.setOnClickListener(view -> listener.onItemClicked(restaurant));
@@ -106,7 +108,8 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
     public static class RestaurantViewHolder extends RecyclerView.ViewHolder{
 
         TextView name,address,opening,distance,workmates_number;
-        ImageView photo_restaurant,account,star1,star2,star3;
+        ImageView photo_restaurant,account;
+        RatingBar ratingBar;
         ConstraintLayout container;
 
         public RestaurantViewHolder(@NonNull View itemView) {
@@ -119,9 +122,7 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
 
             photo_restaurant = itemView.findViewById(R.id.restaurant_photo);
             account = itemView.findViewById(R.id.workmates_number);
-            star1 = itemView.findViewById(R.id.star1);
-            star2 = itemView.findViewById(R.id.star2);
-            star3 = itemView.findViewById(R.id.star3);
+            ratingBar = itemView.findViewById(R.id.simpleRatingBar);
 
             container = itemView.findViewById(R.id.item_view);
         }

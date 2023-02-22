@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,9 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 
+import com.bumptech.glide.Glide;
 import com.example.go4lunchapp.databinding.ActivityMainBinding;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -51,17 +54,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import api.ApiClient;
-import api.ApiInterface;
-import api.JSONResponse;
-import fragments.MapFragment;
+import MVVM.FirebaseViewModel;
 import fragments.RestaurantsFragment;
 import fragments.WorkmatesFragment;
 import models.Restaurant;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -73,17 +69,18 @@ public class MainActivity extends AppCompatActivity implements
     ActivityMainBinding binding;
 
     DrawerLayout drawerLayout;
-    TextView drawer_name;
+    TextView drawer_name,drawer_email,currentUser_id;
     ImageView drawer_photo;
     View header;
 
+    AutoCompleteTextView autoComplete;
+
     ActionBarDrawerToggle toggle;
 
-    FirebaseAuth mAuth;
     FirebaseUser user;
-    private SupportMapFragment mapFragment;
 
-    private FusedLocationProviderClient client;
+    FirebaseViewModel viewModel;
+    private SupportMapFragment mapFragment;
 
     private GoogleMap gMap;
 
@@ -99,21 +96,31 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        drawerLayout = findViewById(R.id.drawer_layout);
+        autoComplete = findViewById(R.id.autocomplete_view);
 
+        requirePermission();
+
+        initViewModel();
 
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        drawerLayout = findViewById(R.id.drawer_layout);
+        currentUser_id = findViewById(R.id.currentUser_id);
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         header = navigationView.getHeaderView(0);
         drawer_name = header.findViewById(R.id.currentUser_name);
+        drawer_email = header.findViewById(R.id.currentUser_email);
         drawer_photo = header.findViewById(R.id.currentUser_photo);
 
         setUserInformation();
+
+        getCurrentUser();
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -121,9 +128,9 @@ public class MainActivity extends AppCompatActivity implements
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        replaceFragment(new MapFragment());
+        replaceFragment(setMapFragment());
+        getSupportActionBar().setTitle("Map");
 
-        setMapFragment();
 
 
         binding.bottomNavbar.setOnItemSelectedListener(item -> {
@@ -137,46 +144,56 @@ public class MainActivity extends AppCompatActivity implements
         fragmentTransaction.replace(R.id.frame_layout,fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+
+    }
+    private void initViewModel() {
+        viewModel = new ViewModelProvider(this).get(FirebaseViewModel.class);
     }
     private void setUserInformation(){
-        mAuth = FirebaseAuth.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             drawer_name.setText(user.getDisplayName());
-            drawer_photo.setImageURI(user.getPhotoUrl());
+            drawer_email.setText(user.getEmail());
+            Glide.with(getApplicationContext())
+                    .load(user.getPhotoUrl())
+                    .into(drawer_photo);
         } else {
             Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show();
         }
     }
-    private void setMapFragment(){
+    public void getCurrentUser(){
+        Intent intent = getIntent();
+        if (intent!=null){
+            String id = intent.getStringExtra("id");
+            currentUser_id.setText(id);
+        }
+    }
+    private SupportMapFragment setMapFragment(){
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_fragment);
         if (mapFragment == null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             mapFragment = SupportMapFragment.newInstance();
-            fragmentTransaction.replace(R.id.map_fragment, mapFragment).commit();
         }
-
-        client = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         mapFragment.getMapAsync(this);
+        return mapFragment;
     }
-
     @SuppressLint("NonConstantResourceId")
     private void selectItem(MenuItem item){
         switch (item.getItemId()){
             case R.id.map_menu:
-                replaceFragment(new MapFragment());
                 requirePermission();
-                setMapFragment();
+                replaceFragment(setMapFragment());
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Map");
                 break;
 
             case R.id.restaurants_menu:
                 requirePermission();
                 replaceFragment(new RestaurantsFragment());
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Restaurants");
                 break;
 
             case R.id.workmates_menu:
                 replaceFragment(new WorkmatesFragment());
+                Objects.requireNonNull(getSupportActionBar()).setTitle("Workmates");
                 break;
         }
 
@@ -220,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
+        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
         client.getLastLocation().addOnCompleteListener(task -> {
             Location location = task.getResult();
             if (location != null) {
@@ -251,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
-    private void sendDataToRestaurantFragment(List<Restaurant> dataList, double lat, double lng) {
+    private void sendRestaurantsToRestaurantFragment(List<Restaurant> dataList, double lat, double lng) {
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("restaurants", (Serializable) dataList);
@@ -261,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements
         getSupportFragmentManager().setFragmentResult("restaurants", bundle);
 
     }
-    private void setMarkerWithData(){
+    private void setGoogleMarkers(){
         for (int i = 0; i < restaurants.size() - 1; i++) {
             MarkerOptions markerOptions = new MarkerOptions();
 
@@ -286,8 +304,7 @@ public class MainActivity extends AppCompatActivity implements
                 markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_baseline_lunch_dining_red_24));
             }
             gMap.addMarker(markerOptions);
-            gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            gMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
         }
     }
 
@@ -295,33 +312,15 @@ public class MainActivity extends AppCompatActivity implements
 
 
         String location = lat.toString() + "," + lng.toString();
-        int radius = 1000;
-        String type = "restaurant";
-        String key = "AIzaSyDu_b1WHImUbpk593yksTIpdcJJ3JjVwVY";
-        Retrofit client = ApiClient.getClient("https://maps.googleapis.com/maps/api/place/");
-        ApiInterface apiInterface = client.create(ApiInterface.class);
+        initViewModel();
+        viewModel.getPlaceResultLiveData(location).observe(this, jsonResponse -> {
+            restaurants = new ArrayList<>(Objects.requireNonNull(jsonResponse).getRestaurants());
+            setGoogleMarkers();
+            sendRestaurantsToRestaurantFragment(restaurants,lat,lng);
 
-        Call<JSONResponse> call = apiInterface.getRestaurants(location, radius, type, key);
-
-        call.enqueue(new Callback<JSONResponse>() {
-            @Override
-            public void onResponse(@NonNull Call<JSONResponse> call, @NonNull Response<JSONResponse> response) {
-                if (!response.isSuccessful()){
-                    Toast.makeText(getApplicationContext(), "Response failed", Toast.LENGTH_SHORT).show();
-                }else{
-                    JSONResponse jsonResponse = Objects.requireNonNull(response.body());
-                    restaurants = new ArrayList<>(Objects.requireNonNull(jsonResponse).getRestaurants());
-                    setMarkerWithData();
-                    sendDataToRestaurantFragment(restaurants,lat,lng);
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<JSONResponse> call, @NonNull Throwable t) {
-                Toast.makeText(getApplicationContext(), "Reading error", Toast.LENGTH_SHORT).show();
-            }
         });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -332,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
     }
+
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {

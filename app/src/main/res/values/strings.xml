@@ -13,6 +13,8 @@
     <string name="google_map_key">AIzaSyDOBddcSKOqcEQ5HzeDySmC2vAQw9130lU</string>
     <string name="google_place_key">AIzaSyDu_b1WHImUbpk593yksTIpdcJJ3JjVwVY</string>
 
+    <string name="com_facebook_loginview_logged_in_using_facebook_f1gender">required</string>
+
     <string name="map">map</string>
     <string name="restaurants">restaurants</string>
     <string name="workmates">workmates</string>
@@ -38,4 +40,12 @@
     <string name="appeler">Appeler</string>
     <string name="favori" >Favori</string>
     <string name="site_internet">Site internet</string>
+    <string name="name_of_user">name_of_user</string>
+    <string name="email">email</string>
+    <string name="rechercher_des_lieux">Rechercher des lieux</string>
+    <string name="search_nearby_restaurants">Search nearby restaurants</string>
+    <string name="call">call</string>
+    <string name="favorites">favorites</string>
+    <string name="website">website</string>
+    <string name="id">ID</string>
 </resources>

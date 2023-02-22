@@ -1,12 +1,19 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fragments.MapFragment">
-
+    tools:context="fragments.MapFragment"
+    android:id="@+id/map_fragment_container">
     <FrameLayout
         android:id="@+id/map_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <AutoCompleteTextView
+        android:id="@+id/autocomplete_view"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="@string/search_nearby_restaurants"
+        />
 </FrameLayout>

@@ -1,30 +1,50 @@
 package fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.go4lunchapp.R;
-import com.google.firebase.auth.FirebaseAuth;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-
-import models.Restaurant;
+import MVVM.FirebaseViewModel;
+import adapter.WorkmatesFragmentAdapter;
 
 public class WorkmatesFragment extends Fragment {
+
+    FirebaseViewModel viewModel;
+    RecyclerView recyclerView;
+    WorkmatesFragmentAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_workmates, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_workmates, container, false);
+        recyclerView = view.findViewById(R.id.workmates_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new WorkmatesFragmentAdapter(getContext());
+        setViewModel();
+        recyclerView.setAdapter(adapter);
+        return view;
+    }
+
+
+
+    @SuppressLint("NotifyDataSetChanged")
+    private void setViewModel(){
+        viewModel = new ViewModelProvider(this).get(FirebaseViewModel.class);
+        viewModel.getUserList().observe(getViewLifecycleOwner(), users -> {
+            if (!(users == null)){
+                adapter.setAdapter(users);
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 }
