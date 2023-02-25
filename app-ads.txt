@@ -1,0 +1,2 @@
+# app-ads.txt file for MyApp
+facebook.com,718578949964841, DIRECT
