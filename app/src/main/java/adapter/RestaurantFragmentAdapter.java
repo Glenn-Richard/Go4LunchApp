@@ -13,6 +13,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -21,6 +26,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
+import MVVM.FirebaseRepository;
+import MVVM.GeneralViewModel;
 import models.Restaurant;
 import utils.ItemListener;
 
@@ -30,6 +37,7 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
     ArrayList<Restaurant> restaurants;
     ItemListener listener;
     LatLng currentLocation;
+    ViewModel viewModel;
 
     public RestaurantFragmentAdapter(Context context, ArrayList<Restaurant> restaurants,ItemListener listener,LatLng currentLocation) {
         this.context = context;
@@ -57,7 +65,7 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
 
     @SuppressLint("SetTextI18n")
     @Override
-    public void onBindViewHolder(@NonNull RestaurantViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RestaurantViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         Restaurant restaurant = restaurants.get(position);
 
@@ -96,8 +104,22 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
         }
         holder.ratingBar.setRating((float) restaurant.getRating());
 
+        new ViewModelProvider((ViewModelStoreOwner) context).get(GeneralViewModel.class)
+                .getWorkmatesCount(restaurant)
+                .observe((LifecycleOwner) context, integer -> {
+                    if (restaurant.getNumber_of_workmates()==0){
+                        holder.count.setVisibility(View.GONE);
+                        holder.workmates_number.setVisibility(View.GONE);
+                    }else{
+                        holder.count.setVisibility(View.VISIBLE);
+                        holder.workmates_number.setVisibility(View.VISIBLE);
+                        holder.count.setText("("+restaurant.getNumber_of_workmates()+")");
+                    }
+                });
+
 
         holder.container.setOnClickListener(view -> listener.onItemClicked(restaurant));
+
 
     }
     @Override
@@ -107,8 +129,8 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
 
     public static class RestaurantViewHolder extends RecyclerView.ViewHolder{
 
-        TextView name,address,opening,distance,workmates_number;
-        ImageView photo_restaurant,account;
+        TextView name,address,opening,distance,count;
+        ImageView photo_restaurant,workmates_number;
         RatingBar ratingBar;
         ConstraintLayout container;
 
@@ -118,11 +140,11 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
             address = itemView.findViewById(R.id.restaurant_address);
             opening = itemView.findViewById(R.id.opening);
             distance = itemView.findViewById(R.id.distance);
-            workmates_number = itemView.findViewById(R.id.count);
+            count = itemView.findViewById(R.id.count);
 
             photo_restaurant = itemView.findViewById(R.id.restaurant_photo);
-            account = itemView.findViewById(R.id.workmates_number);
             ratingBar = itemView.findViewById(R.id.simpleRatingBar);
+            workmates_number = itemView.findViewById(R.id.workmates_number);
 
             container = itemView.findViewById(R.id.item_view);
         }

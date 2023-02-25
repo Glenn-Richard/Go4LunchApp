@@ -10,15 +10,16 @@ import java.util.List;
 
 import api.DetailsPlaces;
 import api.JSONResponse;
+import models.Restaurant;
 import models.User;
 
-public class FirebaseViewModel extends ViewModel{
+public class GeneralViewModel extends ViewModel{
 
     private final FirebaseRepository firebaseRepository = new FirebaseRepository();
     private final RetrofitRepository retrofitRepository = new RetrofitRepository();
 
 
-    public FirebaseViewModel(){
+    public GeneralViewModel(){
         firebaseRepository.getUsers();
     }
 
@@ -28,9 +29,6 @@ public class FirebaseViewModel extends ViewModel{
     }
     public LiveData<User> getCurrentUser(String id){
         firebaseRepository.getCurrentUser(id);
-        synchronized (firebaseRepository.currentUser){
-            firebaseRepository.currentUser.notify();
-        }
         return firebaseRepository.currentUser;
     }
     public LiveData<JSONResponse> getPlaceResultLiveData(String loc){
@@ -39,22 +37,37 @@ public class FirebaseViewModel extends ViewModel{
     public LiveData<DetailsPlaces> getDetailsPlaceLiveData(String place_id){
         return retrofitRepository.getRestaurantsDetails(place_id);
     }
+    public LiveData<Boolean> isFavorite(Restaurant restaurant){
+        return firebaseRepository.isFavorite(restaurant);
+    }
+    public LiveData<Boolean> isSelected(Restaurant restaurant){
+        return firebaseRepository.isSelected(restaurant);
+    }
+    public LiveData<Integer> getWorkmatesCount(Restaurant restaurant){
+        return firebaseRepository.getWorkmatesCount(restaurant);
+    }
 
     //SETTER
     public void setUserList(User user){
         firebaseRepository.setUser(user);
     }
-    public void updateUser(User user, String field,String value){
-        firebaseRepository.updateUser(user,field,value);
-        synchronized (user){
-            user.notify();
-        }
+    public void updateFavoritesUser(User user, String field,String value){
+        firebaseRepository.updateFavoritesUser(user,field,value);
     }
-    public void deleteField(User user,String field,String value){
+    public void updateUser(User user,String field,Object value){
+        firebaseRepository.updateUser(user,field,value);
+    }
+    public void deleteFavoritesField(User user, String field, String value){
+        firebaseRepository.deleteFavoritesField(user,field,value);
+    }
+    public void deleteField(User user,String field,Object value){
         firebaseRepository.deleteField(user,field,value);
-        synchronized (user){
-            user.notify();
-        }
+    }
+    public LiveData<Boolean> setChoice(Restaurant restaurant){
+        return firebaseRepository.setChoice(restaurant);
+    }
+    public  LiveData<Boolean> setFavorite(Restaurant restaurant){
+        return firebaseRepository.setFavorites(restaurant);
     }
 
     //CHECKER

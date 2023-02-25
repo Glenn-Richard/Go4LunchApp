@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.go4lunchapp.R;
 
-import MVVM.FirebaseViewModel;
+import MVVM.GeneralViewModel;
 import adapter.WorkmatesFragmentAdapter;
 
 public class WorkmatesFragment extends Fragment {
 
-    FirebaseViewModel viewModel;
+    GeneralViewModel viewModel;
     RecyclerView recyclerView;
     WorkmatesFragmentAdapter adapter;
 
@@ -39,7 +39,7 @@ public class WorkmatesFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void setViewModel(){
-        viewModel = new ViewModelProvider(this).get(FirebaseViewModel.class);
+        viewModel = new ViewModelProvider(this).get(GeneralViewModel.class);
         viewModel.getUserList().observe(getViewLifecycleOwner(), users -> {
             if (!(users == null)){
                 adapter.setAdapter(users);

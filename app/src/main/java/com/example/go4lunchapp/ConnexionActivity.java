@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -39,7 +40,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import java.util.Collections;
 import java.util.Objects;
 
-import MVVM.FirebaseViewModel;
+import MVVM.GeneralViewModel;
 
 public class ConnexionActivity extends AppCompatActivity {
 
@@ -52,14 +53,16 @@ public class ConnexionActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
 
-    private FirebaseViewModel viewModel;
+    private GeneralViewModel viewModel;
+
+    LoginButton btn_facebook;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connexion);
 
-        LoginButton btn_facebook = findViewById(R.id.btn_connexion_facebook);
+        btn_facebook = findViewById(R.id.btn_connexion_facebook);
         Button btn_google = findViewById(R.id.btn_connexion_google);
 
         auth = FirebaseAuth.getInstance();
@@ -75,15 +78,16 @@ public class ConnexionActivity extends AppCompatActivity {
         btn_facebook.setReadPermissions(EMAIL);
 
 
-        facebookAuth();
+        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
-        btn_facebook.setOnClickListener(view -> facebookLoginManager());
+        btn_facebook.setOnClickListener(view -> facebookAuth());
 
         btn_google.setOnClickListener(view -> signIn());
     }
     private void setViewModel(){
-        viewModel = new FirebaseViewModel();
-        viewModel = new ViewModelProvider(this).get(FirebaseViewModel.class);
+        viewModel = new GeneralViewModel();
+        viewModel = new ViewModelProvider(this).get(GeneralViewModel.class);
     }
     private void oneTapSetter(){
         oneTapClient = Identity.getSignInClient(this);
@@ -115,6 +119,7 @@ public class ConnexionActivity extends AppCompatActivity {
                 .addOnFailureListener(this, e -> Log.d(TAG, e.getLocalizedMessage()));
     }
     private void facebookAuth(){
+        btn_facebook.setPermissions("email", "public_profile");
         LoginManager.getInstance().registerCallback(callbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override

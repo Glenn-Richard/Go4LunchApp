@@ -1,5 +1,6 @@
 package adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.example.go4lunchapp.R;
 
 import java.util.List;
 
+import models.Restaurant;
 import models.User;
 
 public class WorkmatesFragmentAdapter extends RecyclerView.Adapter<WorkmatesFragmentAdapter.WorkmatesViewHolder>{
@@ -37,16 +39,29 @@ public class WorkmatesFragmentAdapter extends RecyclerView.Adapter<WorkmatesFrag
         return new WorkmatesViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull WorkmatesViewHolder holder, int position) {
 
-        holder.name.setText(users.get(position).getName());
-        if (!(users.get(position).getPhoto()==null)){
+        User user = users.get(position);
+        Restaurant restaurant = user.getChoice();
+        if (!(restaurant==null)) {
+            if (restaurant.getTypes()==null){
+
+                holder.message.setText(user.getName() + " is eating to "+restaurant.getName());
+            }else{
+                holder.message.setText(user.getName() + " is eating " + restaurant.getTypes().get(0) + " (" + restaurant.getName() + ")");
+            }
+        }else{
+                holder.message.setText(user.getName()+" hasn't decide yet");
+        }
+        if (!(user.getPhoto()==null)){
             Glide.with(context)
                     .load(users.get(position).getPhoto())
                     .fitCenter()
                     .into(holder.photo_user);
         }
+
 
     }
 
@@ -62,13 +77,13 @@ public class WorkmatesFragmentAdapter extends RecyclerView.Adapter<WorkmatesFrag
 
     public static class WorkmatesViewHolder extends RecyclerView.ViewHolder{
 
-        TextView name;
+        TextView message;
         ImageView photo_user;
         ConstraintLayout container;
 
         public WorkmatesViewHolder(@NonNull View itemView) {
             super(itemView);
-            name = itemView.findViewById(R.id.user_name);
+            message = itemView.findViewById(R.id.user_message);
 
             photo_user = itemView.findViewById(R.id.user_photo);
 

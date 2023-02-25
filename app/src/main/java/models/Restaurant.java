@@ -40,6 +40,10 @@ public class Restaurant {
     @SerializedName("formatted_phone_number")
     private String phone;
 
+    @SerializedName("types")
+    @Expose
+    List<String> types;
+
     @SerializedName("rating")
     private double rating;
 
@@ -58,7 +62,7 @@ public class Restaurant {
     }
 
 
-    public Restaurant(String place_id,String name, String address, List<Photo> photo, int stars, int number_of_workmates, double lat, double lng, float distance_of_current_location, String phone, int rating, boolean opening, boolean no_opening_hours, String website) {
+    public Restaurant(String place_id,String name, String address, List<Photo> photo, int stars, int number_of_workmates, double lat, double lng, float distance_of_current_location, String phone,List<String> types, int rating, boolean opening, boolean no_opening_hours, String website) {
         this.place_id = place_id;
         this.name = name;
         this.address = address;
@@ -69,6 +73,7 @@ public class Restaurant {
         this.lng = lng;
         this.distance_of_current_location = distance_of_current_location;
         this.phone = phone;
+        this.types = types;
         this.rating = rating;
         this.opening = opening;
         this.open_info = no_opening_hours;
@@ -186,6 +191,13 @@ public class Restaurant {
         this.phone = phone;
     }
 
+    public List<String> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<String> types) {
+        this.types = types;
+    }
 
     public double getRating() {
         return rating;

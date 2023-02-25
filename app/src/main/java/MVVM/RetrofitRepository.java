@@ -57,7 +57,7 @@ public class RetrofitRepository {
 
     public LiveData<DetailsPlaces> getRestaurantsDetails(String place_id){
         MutableLiveData<DetailsPlaces> detailsPlacesMutableLiveData = new MutableLiveData<>();
-        String fields = "formatted_phone_number,website";
+        String fields = "formatted_phone_number,website,types";
         String apiKey = "AIzaSyDu_b1WHImUbpk593yksTIpdcJJ3JjVwVY";
 
         Call<DetailsPlaces> detailsPlacesCall = googleMapAPI.getDetailsPlaces(place_id,fields,apiKey);

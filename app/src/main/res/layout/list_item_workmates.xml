@@ -17,10 +17,11 @@
         android:contentDescription="@string/user_profile" />
 
     <TextView
-        android:id="@+id/user_name"
-        android:layout_width="wrap_content"
+        android:id="@+id/user_message"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="@string/name_of_user"
+        android:ellipsize="marquee"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

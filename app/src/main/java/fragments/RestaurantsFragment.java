@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -19,8 +18,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import MVVM.FirebaseViewModel;
+import MVVM.GeneralViewModel;
 import adapter.RestaurantFragmentAdapter;
 import models.Restaurant;
 import utils.ItemListener;
@@ -33,6 +33,8 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
     private double lat;
     private double lng;
 
+    Intent intent;
+
     private List<Restaurant> restaurants = new ArrayList<>();
 
     @SuppressLint("NotifyDataSetChanged")
@@ -43,6 +45,8 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
         View view = inflater.inflate(R.layout.fragment_restaurants, container, false);
 
         getDataFromMainActivity(view);
+
+        intent = new Intent(getActivity(), DetailRestaurantActivity.class);
 
 
         return view;
@@ -76,11 +80,6 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
     }
     private void launchDetailsActivity(Restaurant restaurant){
 
-        Intent intent = new Intent(getActivity(), DetailRestaurantActivity.class);
-
-        TextView id = requireActivity().findViewById(R.id.currentUser_id);
-        CharSequence id_text = id.getText();
-        intent.putExtra("currentUser",id_text);
         intent.putExtra("name", restaurant.getName());
         intent.putExtra("place_id",restaurant.getPlace_id());
         intent.putExtra("address", restaurant.getAddress());
@@ -97,20 +96,22 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
         intent.putExtra("website", restaurant.getWebsite());
         intent.putExtra("rating", restaurant.getRating());
 
-        startActivity(intent);
+            startActivity(intent);
+
     }
     @Override
     public void onItemClicked(Restaurant restaurant) {
 
         new ViewModelProvider(this)
-                .get(FirebaseViewModel.class)
+                .get(GeneralViewModel.class)
                 .getDetailsPlaceLiveData(restaurant.getPlace_id())
                 .observe(getViewLifecycleOwner(), detailsPlaces -> {
                     restaurant.setPhone(detailsPlaces.getRestaurantsDetails().getPhone());
                     restaurant.setWebsite(detailsPlaces.getRestaurantsDetails().getWebsite());
                     launchDetailsActivity(restaurant);
-                });
 
+
+                });
     }
 
 }

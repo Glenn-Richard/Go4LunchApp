@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import MVVM.FirebaseViewModel;
+import MVVM.GeneralViewModel;
 import fragments.RestaurantsFragment;
 import fragments.WorkmatesFragment;
 import models.Restaurant;
@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements
 
     FirebaseUser user;
 
-    FirebaseViewModel viewModel;
+    GeneralViewModel viewModel;
     private SupportMapFragment mapFragment;
 
     private GoogleMap gMap;
@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements
 
     }
     private void initViewModel() {
-        viewModel = new ViewModelProvider(this).get(FirebaseViewModel.class);
+        viewModel = new ViewModelProvider(this).get(GeneralViewModel.class);
     }
     private void setUserInformation(){
         user = FirebaseAuth.getInstance().getCurrentUser();
