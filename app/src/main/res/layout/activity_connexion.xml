@@ -1,42 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ConnexionActivity"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context=".ConnexionActivity">
+
+    <ImageView
+        android:id="@+id/logo_connexion"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="90dp"
+        android:src="@drawable/go4lunch_logo"
+        app:layout_constraintBottom_toTopOf="@+id/fb_button_layout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:contentDescription="@string/go4lunch" />
+
+    <pl.droidsonroids.gif.GifImageButton
+        android:id="@+id/progress_bar_connexion"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/transparant"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/welcome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/welcome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/lalezar_regular"
         android:text="@string/bienvenue_sur_go4lunch"
-        android:textColor="@color/black"
-        android:layout_marginBottom="50dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:textColor="@color/orange"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/logo_connexion"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/btn_connexion_facebook"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/btn_connexion_facebook"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:text="@string/se_connecter_avec_facebook"
-        app:backgroundTint="@color/facebook_color"
+    <LinearLayout
+        android:id="@+id/fb_button_layout"
+        android:layout_width="300dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="200dp"
+        android:background="@drawable/facebook_button_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
 
-    <Button
-        android:id="@+id/btn_connexion_google"
-        android:layout_width="250dp"
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="10dp"
+            android:src="@drawable/facebook_logo_icon_147291"
+            android:contentDescription="@string/facebook" />
+
+        <LinearLayout
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/click"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="@string/se_connecter_avec_facebook"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:backgroundTint="@color/facebook_color" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/btn_connexion_facebook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/se_connecter_avec_facebook"
+            android:visibility="gone"
+            app:backgroundTint="@color/facebook_color" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/google_button_layout"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:text="@string/se_connecter_avec_google"
-        app:backgroundTint="@color/google_color"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/google_button_background"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_connexion_facebook" />
+        app:layout_constraintTop_toBottomOf="@+id/fb_button_layout">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/google"
+            android:src="@drawable/google_icon"
+            tools:ignore="ImageContrastCheck" />
+
+        <LinearLayout
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
+        <TextView
+            android:id="@+id/btn_connexion_google"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            android:text="@string/se_connecter_avec_google"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

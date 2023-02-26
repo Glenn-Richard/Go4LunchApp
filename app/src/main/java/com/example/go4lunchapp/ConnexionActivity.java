@@ -7,7 +7,10 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -41,6 +44,8 @@ import java.util.Collections;
 import java.util.Objects;
 
 import MVVM.GeneralViewModel;
+import pl.droidsonroids.gif.GifImageButton;
+import pl.droidsonroids.gif.GifImageView;
 
 public class ConnexionActivity extends AppCompatActivity {
 
@@ -55,15 +60,25 @@ public class ConnexionActivity extends AppCompatActivity {
 
     private GeneralViewModel viewModel;
 
-    LoginButton btn_facebook;
+    private LoginButton btn_facebook;
+
+    private LinearLayout fb_button;
+    private LinearLayout btn_google;
+    private ImageView logo;
+    private TextView welcome;
+    private GifImageButton progress_bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_connexion);
 
+        fb_button = findViewById(R.id.fb_button_layout);
         btn_facebook = findViewById(R.id.btn_connexion_facebook);
-        Button btn_google = findViewById(R.id.btn_connexion_google);
+        btn_google = findViewById(R.id.google_button_layout);
+        logo = findViewById(R.id.logo_connexion);
+        welcome = findViewById(R.id.welcome);
+        progress_bar = findViewById(R.id.progress_bar_connexion);
 
         auth = FirebaseAuth.getInstance();
 
@@ -81,7 +96,10 @@ public class ConnexionActivity extends AppCompatActivity {
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
-        btn_facebook.setOnClickListener(view -> facebookAuth());
+        fb_button.setOnClickListener(view -> {
+            btn_facebook.performClick();
+            facebookAuth();
+        });
 
         btn_google.setOnClickListener(view -> signIn());
     }
@@ -142,7 +160,7 @@ public class ConnexionActivity extends AppCompatActivity {
     private void google_request(){
         //Google Auth values
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(String.valueOf(R.string.default_web_client_id))
+                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
@@ -156,6 +174,12 @@ public class ConnexionActivity extends AppCompatActivity {
                     String idToken = credential.getGoogleIdToken();
                     String password = credential.getPassword();
                     if (idToken != null) {
+                        logo.setVisibility(View.GONE);
+                        welcome.setVisibility(View.GONE);
+                        btn_google.setVisibility(View.GONE);
+                        fb_button.setVisibility(View.GONE);
+                        progress_bar.setVisibility(View.VISIBLE);
+
                         firebaseAuthWithGoogle(idToken);
                         Log.d(TAG, "Got ID token.");
                     } else if (password != null) {
@@ -175,6 +199,7 @@ public class ConnexionActivity extends AppCompatActivity {
     private void mainActivityForResult(String id){
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("id", id);
+        progress_bar.setVisibility(View.GONE);
         startActivity(intent);
     }
     private void facebookLoginManager(){
@@ -186,7 +211,7 @@ public class ConnexionActivity extends AppCompatActivity {
         auth.signInWithCredential(firebaseCredential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
+
                         Log.d(TAG, "signInWithCredential:success");
 
                         FirebaseUser user = auth.getCurrentUser();
@@ -194,7 +219,7 @@ public class ConnexionActivity extends AppCompatActivity {
                         mainActivityForResult(Objects.requireNonNull(user).getUid());
 
                     } else {
-                        // If sign in fails, display a message to the user.
+
                         Log.w(TAG, "signInWithCredential:failure", task.getException());
                     }
                 })

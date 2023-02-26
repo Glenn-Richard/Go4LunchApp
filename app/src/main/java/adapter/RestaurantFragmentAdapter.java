@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import MVVM.FirebaseRepository;
 import MVVM.GeneralViewModel;
 import models.Restaurant;
+import pl.droidsonroids.gif.GifImageView;
 import utils.ItemListener;
 
 public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantFragmentAdapter.RestaurantViewHolder>{
@@ -68,6 +69,9 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
     public void onBindViewHolder(@NonNull RestaurantViewHolder holder, @SuppressLint("RecyclerView") int position) {
 
         Restaurant restaurant = restaurants.get(position);
+
+        holder.cache.setVisibility(View.INVISIBLE);
+        holder.progress_image.setVisibility(View.VISIBLE);
 
         holder.name.setText(restaurant.getName());
         holder.address.setText(restaurant.getAddress());
@@ -117,6 +121,8 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
                     }
                 });
 
+        holder.cache.setVisibility(View.VISIBLE);
+        holder.progress_image.setVisibility(View.INVISIBLE);
 
         holder.container.setOnClickListener(view -> listener.onItemClicked(restaurant));
 
@@ -132,7 +138,8 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
         TextView name,address,opening,distance,count;
         ImageView photo_restaurant,workmates_number;
         RatingBar ratingBar;
-        ConstraintLayout container;
+        ConstraintLayout container,cache;
+        GifImageView progress_image;
 
         public RestaurantViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -147,6 +154,9 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
             workmates_number = itemView.findViewById(R.id.workmates_number);
 
             container = itemView.findViewById(R.id.item_view);
+            cache = itemView.findViewById(R.id.list_container);
+
+            progress_image = itemView.findViewById(R.id.progress_bar_restaurant);
         }
     }
     public float calculationByDistance(LatLng StartP, LatLng EndP) {

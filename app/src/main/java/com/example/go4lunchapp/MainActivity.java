@@ -142,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements
         replaceFragment(setMapFragment());
         Objects.requireNonNull(getSupportActionBar()).setTitle("Map");
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         fab.setOnClickListener(view -> {
             initViewModel();
             viewModel.initializePlaces(lat,lng);

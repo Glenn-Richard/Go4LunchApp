@@ -38,7 +38,7 @@
     <string name="name">Name</string>
     <string name="textview">TextView</string>
     <string name="appeler">Appeler</string>
-    <string name="favori" >Favori</string>
+    <string name="favori">Favori</string>
     <string name="site_internet">Site internet</string>
     <string name="name_of_user">name_of_user</string>
     <string name="email">email</string>
@@ -49,4 +49,8 @@
     <string name="website">website</string>
     <string name="id">ID</string>
     <string name="search">Search</string>
+    <string name="go4lunch">Go4Lunch</string>
+    <string name="facebook">facebook</string>
+    <string name="google">google</string>
+
 </resources>
