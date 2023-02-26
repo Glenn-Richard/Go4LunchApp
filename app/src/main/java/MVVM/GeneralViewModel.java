@@ -17,6 +17,7 @@ public class GeneralViewModel extends ViewModel{
 
     private final FirebaseRepository firebaseRepository = new FirebaseRepository();
     private final RetrofitRepository retrofitRepository = new RetrofitRepository();
+    private final PlacesRepository placesRepository  = new PlacesRepository();
 
 
     public GeneralViewModel(){
@@ -73,6 +74,11 @@ public class GeneralViewModel extends ViewModel{
     //CHECKER
     public void userAlreadyExist(FirebaseUser user){
         firebaseRepository.userAlreadyExist(user);
+    }
+
+    //INITIALIZER
+    public void initializePlaces(double lat,double lng){
+        placesRepository.initializationPLacesClient(lat,lng);
     }
 
 }
