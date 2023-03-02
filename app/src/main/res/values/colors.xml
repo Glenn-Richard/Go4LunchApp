@@ -15,4 +15,5 @@
     <color name="green">#159C2C</color>
     <color name="red">#E72B1D</color>
     <color name="yellow">#FFEB3B</color>
+    <color name="button">#919191</color>
 </resources>

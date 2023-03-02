@@ -52,5 +52,6 @@
     <string name="go4lunch">Go4Lunch</string>
     <string name="facebook">facebook</string>
     <string name="google">google</string>
+    <string name="choice">Choice</string>
 
 </resources>

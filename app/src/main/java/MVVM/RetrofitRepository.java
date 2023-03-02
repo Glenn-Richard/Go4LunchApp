@@ -20,14 +20,7 @@ public class RetrofitRepository {
 
 
     private static GoogleMapAPI googleMapAPI = null;
-    private static RetrofitRepository newRepository;
 
-    public static RetrofitRepository getInstance(){
-        if (newRepository == null){
-            newRepository = new RetrofitRepository();
-        }
-        return newRepository;
-    }
     public RetrofitRepository(){
         googleMapAPI = ApiClient.getInterface();
     }

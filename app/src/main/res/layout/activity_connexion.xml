@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     android:background="@color/white"
     tools:context=".ConnexionActivity">
 
     <ImageView
         android:id="@+id/logo_connexion"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_marginBottom="90dp"
+        android:layout_width="100pt"
+        android:layout_height="100pt"
+        android:contentDescription="@string/go4lunch"
         android:src="@drawable/go4lunch_logo"
-        app:layout_constraintBottom_toTopOf="@+id/fb_button_layout"
+        app:layout_constraintBottom_toBottomOf="@+id/welcome"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:contentDescription="@string/go4lunch" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <pl.droidsonroids.gif.GifImageButton
         android:id="@+id/progress_bar_connexion"
@@ -36,27 +37,28 @@
         android:text="@string/bienvenue_sur_go4lunch"
         android:textColor="@color/orange"
         android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="@+id/logo_connexion"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/fb_button_layout"
         android:layout_width="300dp"
         android:layout_height="50dp"
-        android:layout_marginBottom="200dp"
-        android:background="@drawable/facebook_button_background"
+        android:background="@drawable/button_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/logo_connexion">
 
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_gravity="center_vertical"
             android:layout_margin="10dp"
-            android:src="@drawable/facebook_logo_icon_147291"
-            android:contentDescription="@string/facebook" />
+            android:contentDescription="@string/facebook"
+            android:src="@drawable/facebook_logo_icon_147291" />
 
         <LinearLayout
             android:layout_width="1dp"
@@ -90,7 +92,7 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="@drawable/google_button_background"
+        android:background="@drawable/button_background"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

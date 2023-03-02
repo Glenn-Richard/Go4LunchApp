@@ -18,7 +18,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import MVVM.GeneralViewModel;
 import adapter.RestaurantFragmentAdapter;
@@ -82,6 +81,7 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
 
         intent.putExtra("name", restaurant.getName());
         intent.putExtra("place_id",restaurant.getPlace_id());
+        intent.putExtra("geometry",restaurant.getGeometry());
         intent.putExtra("address", restaurant.getAddress());
         if (!(restaurant.getPhoto()==null)){
             intent.putExtra("photo", restaurant
@@ -91,7 +91,9 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
         }else{
             intent.putExtra("photo", R.mipmap.unavailable_image);
         }
-        intent.putExtra("opening", restaurant.isOpening());
+        if (!(restaurant.getOpening_hours()==null)){
+            intent.putExtra("opening", restaurant.getOpening_hours().getOpen_now());
+        }
         intent.putExtra("phone", restaurant.getPhone());
         intent.putExtra("website", restaurant.getWebsite());
         intent.putExtra("rating", restaurant.getRating());
@@ -109,8 +111,6 @@ public class RestaurantsFragment extends Fragment implements ItemListener{
                     restaurant.setPhone(detailsPlaces.getRestaurantsDetails().getPhone());
                     restaurant.setWebsite(detailsPlaces.getRestaurantsDetails().getWebsite());
                     launchDetailsActivity(restaurant);
-
-
                 });
     }
 

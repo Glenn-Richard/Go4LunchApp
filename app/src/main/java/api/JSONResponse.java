@@ -17,7 +17,4 @@ public class JSONResponse {
         return restaurants;
     }
 
-    public void setRestaurants(List<Restaurant> restaurants) {
-        this.restaurants = restaurants;
-    }
 }

@@ -18,7 +18,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -40,12 +39,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import java.util.Collections;
 import java.util.Objects;
 
 import MVVM.GeneralViewModel;
 import pl.droidsonroids.gif.GifImageButton;
-import pl.droidsonroids.gif.GifImageView;
 
 public class ConnexionActivity extends AppCompatActivity {
 
@@ -91,10 +88,6 @@ public class ConnexionActivity extends AppCompatActivity {
         AppEventsLogger.activateApp(this);
 
         btn_facebook.setReadPermissions(EMAIL);
-
-
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        boolean isLoggedIn = accessToken != null && !accessToken.isExpired();
 
         fb_button.setOnClickListener(view -> {
             btn_facebook.performClick();
@@ -201,9 +194,6 @@ public class ConnexionActivity extends AppCompatActivity {
         intent.putExtra("id", id);
         progress_bar.setVisibility(View.GONE);
         startActivity(intent);
-    }
-    private void facebookLoginManager(){
-        LoginManager.getInstance().logInWithReadPermissions(this, Collections.singletonList("public_profile"));
     }
 
     private void firebaseAuthWithGoogle(String idToken){

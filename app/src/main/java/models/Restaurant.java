@@ -24,18 +24,10 @@ public class Restaurant {
     @Expose
     List<Photo> photo;
 
-    private int stars;
-
     private int number_of_workmates;
 
     @SerializedName("geometry")
     Geometry geometry;
-
-    private double lat;
-
-    private double lng;
-
-    private float distance_of_current_location;
 
     @SerializedName("formatted_phone_number")
     private String phone;
@@ -53,8 +45,6 @@ public class Restaurant {
 
     private boolean opening;
 
-    private boolean open_info;
-
     @SerializedName("website")
     private String website;
 
@@ -62,21 +52,17 @@ public class Restaurant {
     }
 
 
-    public Restaurant(String place_id,String name, String address, List<Photo> photo, int stars, int number_of_workmates, double lat, double lng, float distance_of_current_location, String phone,List<String> types, int rating, boolean opening, boolean no_opening_hours, String website) {
+    public Restaurant(String place_id, String name, Geometry geometry,String address, List<Photo> photo, int number_of_workmates, String phone, List<String> types, int rating, boolean opening, String website) {
         this.place_id = place_id;
         this.name = name;
+        this.geometry = geometry;
         this.address = address;
         this.photo = photo;
-        this.stars = stars;
         this.number_of_workmates = number_of_workmates;
-        this.lat = lat;
-        this.lng = lng;
-        this.distance_of_current_location = distance_of_current_location;
         this.phone = phone;
         this.types = types;
         this.rating = rating;
         this.opening = opening;
-        this.open_info = no_opening_hours;
         this.website = website;
     }
 
@@ -112,21 +98,14 @@ public class Restaurant {
         this.geometry = geometry;
     }
 
+    public void setOpening(boolean opening) {
+        this.opening = opening;
+    }
+
     public List<Photo> getPhoto() {
         return photo;
     }
 
-    public void setPhoto(List<Photo> photo) {
-        this.photo = photo;
-    }
-
-    public int getStars() {
-        return stars;
-    }
-
-    public void setStars(int stars) {
-        this.stars = stars;
-    }
 
     public int getNumber_of_workmates() {
         return number_of_workmates;
@@ -136,52 +115,16 @@ public class Restaurant {
         this.number_of_workmates = number_of_workmates;
     }
 
-    public double getLat() {
-        return this.lat;
-    }
 
-    public void setLat(double lat) {
-        this.lat = lat;
-    }
-
-    public double getLng() {
-        return this.lng;
-    }
-
-    public void setLng(double lng) {
-        this.lng = lng;
-    }
-
-    public float getDistance_of_current_location() {
-        return distance_of_current_location;
-    }
-
-    public void setDistance_of_current_location(float distance_of_current_location) {
-        this.distance_of_current_location = distance_of_current_location;
-    }
 
     public OpeningHours getOpening_hours() {
         return opening_hours;
     }
 
-    public void setOpening_hours(OpeningHours opening_hours) {
-        this.opening_hours = opening_hours;
-    }
     public boolean isOpening() {
         return opening;
     }
 
-    public void setOpening(boolean opening) {
-        this.opening = opening;
-    }
-
-    public boolean isOpen_info() {
-        return open_info;
-    }
-
-    public void setOpen_info(boolean open_info) {
-        this.open_info = open_info;
-    }
 
     public String getPhone() {
         return phone;
@@ -195,9 +138,6 @@ public class Restaurant {
         return types;
     }
 
-    public void setTypes(List<String> types) {
-        this.types = types;
-    }
 
     public double getRating() {
         return rating;

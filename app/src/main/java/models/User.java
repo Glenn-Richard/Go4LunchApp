@@ -5,18 +5,13 @@ import java.util.List;
 public class User {
     private String id;
     private String name;
-    private String email;
     private String photo;
     private Restaurant choice;
     private List<String> favorites;
 
-    public User() {}
+    public User(){}
 
-    public User(String id,String name, String email, String photo, Restaurant choice, List<String> favorites) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.photo = photo;
+    public User(Restaurant choice, List<String> favorites) {
         this.choice = choice;
         this.favorites = favorites;
     }
@@ -33,12 +28,7 @@ public class User {
         this.name = name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail(String ignoredEmail) {
     }
 
     public String getPhoto() {
@@ -61,7 +51,4 @@ public class User {
         return favorites;
     }
 
-    public void setFavorites(List<String> favorites) {
-        this.favorites = favorites;
-    }
 }

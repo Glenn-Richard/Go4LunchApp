@@ -4,6 +4,8 @@ import static android.content.ContentValues.TAG;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -12,6 +14,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -23,11 +26,14 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -36,8 +42,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.example.go4lunchapp.databinding.ActivityMainBinding;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationListener;
@@ -69,19 +73,18 @@ import MVVM.GeneralViewModel;
 import fragments.RestaurantsFragment;
 import fragments.WorkmatesFragment;
 import models.Restaurant;
+import models.User;
 
 public class MainActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
         LocationListener {
 
     ActivityMainBinding binding;
 
     DrawerLayout drawerLayout;
     TextView drawer_name,drawer_email,currentUser_id;
-    ImageView drawer_photo;
+    ImageView drawer_photo,back;
     View header;
     FloatingActionButton fab;
 
@@ -91,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements
 
     GeneralViewModel viewModel;
 
+    MenuItem mapFragmentItem;
     private SupportMapFragment mapFragment;
 
     private GoogleMap gMap;
@@ -101,8 +105,10 @@ public class MainActivity extends AppCompatActivity implements
     List<Restaurant> restaurants = new ArrayList<>();
 
     protected static final int REQUEST_CODE = 44;
+    protected static final int REQUEST_CODE_NOTIFICATIONS = 101;
 
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,8 +121,6 @@ public class MainActivity extends AppCompatActivity implements
 
         initViewModel();
 
-
-
         drawerLayout = findViewById(R.id.drawer_layout);
         currentUser_id = findViewById(R.id.currentUser_id);
 
@@ -128,10 +132,13 @@ public class MainActivity extends AppCompatActivity implements
         drawer_photo = header.findViewById(R.id.currentUser_photo);
 
         fab = binding.searchButton;
+        back = binding.mapBackButton;
 
         setUserInformation();
 
         requirePermission();
+
+        askNotificationPermission();
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -152,12 +159,18 @@ public class MainActivity extends AppCompatActivity implements
                     .build(getApplicationContext());
 
             autocompleteLauncher.launch(intent);
+
         });
         binding.bottomNavbar.setOnItemSelectedListener(item -> {
             selectItem(item);
             return true;
         });
+        back.setOnClickListener(view -> {
+            requirePermission();
+            back.setVisibility(View.GONE);
+        });
     }
+
     private final ActivityResultLauncher<Intent> autocompleteLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -185,7 +198,30 @@ public class MainActivity extends AppCompatActivity implements
                     Log.e(TAG, status.getStatusMessage());
                 }
             });
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    private void askNotificationPermission() {
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                NotificationChannel channel = new NotificationChannel("101","channel",NotificationManager.IMPORTANCE_DEFAULT);
+                NotificationManager manager = getSystemService(NotificationManager.class);
+                manager.createNotificationChannel(channel);
+                createNotification();
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, REQUEST_CODE_NOTIFICATIONS);
+            }
+        }
+    }
+    private void createNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "101")
+                .setSmallIcon(R.drawable.ic_baseline_lunch_dining_green_24)
+                .setContentTitle("Voici la table")
+                .setContentText("Beaucoup de restaurants aux alentours!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManagerCompat compat = NotificationManagerCompat.from(this);
+        compat.notify(0,builder.build());
+    }
     private void replaceFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -221,7 +257,9 @@ public class MainActivity extends AppCompatActivity implements
     private void selectItem(MenuItem item){
         switch (item.getItemId()){
             case R.id.map_menu:
+                mapFragmentItem = item;
                 fab.setVisibility(View.VISIBLE);
+                back.setVisibility(View.GONE);
                 requirePermission();
                 replaceFragment(setMapFragment());
                 Objects.requireNonNull(getSupportActionBar()).setTitle("Map");
@@ -229,6 +267,7 @@ public class MainActivity extends AppCompatActivity implements
 
             case R.id.restaurants_menu:
                 fab.setVisibility(View.GONE);
+                back.setVisibility(View.GONE);
                 requirePermission();
                 replaceFragment(new RestaurantsFragment());
                 Objects.requireNonNull(getSupportActionBar()).setTitle("Restaurants");
@@ -236,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements
 
             case R.id.workmates_menu:
                 fab.setVisibility(View.GONE);
+                back.setVisibility(View.GONE);
                 replaceFragment(new WorkmatesFragment());
                 Objects.requireNonNull(getSupportActionBar()).setTitle("Workmates");
                 break;
@@ -246,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements
     private void drawerItemSelected(MenuItem item){
         switch (item.getItemId()){
             case R.id.your_lunch:
-                Toast.makeText(getApplicationContext(),"Your lunch",Toast.LENGTH_SHORT).show();
+                getCurrentUser();
                 break;
             case R.id.settings:
                 Toast.makeText(getApplicationContext(),"Settings",Toast.LENGTH_SHORT).show();
@@ -259,6 +299,43 @@ public class MainActivity extends AppCompatActivity implements
                 break;
         }
     }
+
+    private void getCurrentUser() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        initViewModel();
+        viewModel.getCurrentUser(Objects.requireNonNull(user).getUid())
+                .observe(this, this::showUserLunch);
+    }
+
+    private void showUserLunch(User user) {
+        GoogleMap map = gMap;
+        Restaurant restaurant = user.getChoice();
+        if(restaurant==null) {
+            Toast.makeText(this, "No restaurant selected!", Toast.LENGTH_SHORT).show();
+        }else{
+            double latitude = restaurant.getGeometry().getLocation().getLat();
+            double longitude = restaurant.getGeometry().getLocation().getLng();
+            LatLng markerPosition = new LatLng(latitude, longitude);
+            map.clear();
+            back.setVisibility(View.VISIBLE);
+            MarkerOptions markerOptions  = new MarkerOptions();
+            markerOptions.position(markerPosition);
+                if (restaurant.isOpening()) {
+                    String open = "Open";
+                    markerOptions.title(restaurant.getName() + " " + open);
+                    markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_baseline_lunch_dining_green_24));
+                } else {
+                    String close = "Close";
+                    markerOptions.title(restaurant.getName() + " " + close);
+                    markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.ic_baseline_lunch_dining_red_24));
+                }
+                map.addMarker(markerOptions);
+                map.animateCamera(CameraUpdateFactory.newLatLngZoom(markerPosition, 15));
+            }
+        onBackPressed();
+    }
+
     private void connexionActivity(){
         Intent intent = new Intent(MainActivity.this,ConnexionActivity.class);
         startActivity(intent);
@@ -374,26 +451,16 @@ public class MainActivity extends AppCompatActivity implements
                 requirePermission();
             }
         }
+        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                createNotification();
+            }
+        }
     }
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
 
         requirePermission();
-
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
@@ -411,6 +478,15 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         toggle.onOptionsItemSelected(item);
         return true;
+    }
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawerLayout = findViewById(R.id.drawer_layout);
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
     }
 
 }

@@ -10,10 +10,14 @@ public class Photo implements Serializable {
     private Integer height;
 
     @SerializedName("photo_reference")
-    private String photoReference;
+    private final String photoReference;
 
     @SerializedName("width")
     private Integer width;
+
+    public Photo(String photoReference) {
+        this.photoReference = photoReference;
+    }
 
     public Integer getHeight() {
         return height;
@@ -28,9 +32,6 @@ public class Photo implements Serializable {
         return photoReference;
     }
 
-    public void setPhotoReference(String photoReference) {
-        this.photoReference = photoReference;
-    }
 
     public Integer getWidth() {
         return width;

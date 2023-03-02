@@ -49,20 +49,11 @@ public class GeneralViewModel extends ViewModel{
     }
 
     //SETTER
-    public void setUserList(User user){
-        firebaseRepository.setUser(user);
-    }
     public void updateFavoritesUser(User user, String field,String value){
         firebaseRepository.updateFavoritesUser(user,field,value);
     }
-    public void updateUser(User user,String field,Object value){
-        firebaseRepository.updateUser(user,field,value);
-    }
     public void deleteFavoritesField(User user, String field, String value){
         firebaseRepository.deleteFavoritesField(user,field,value);
-    }
-    public void deleteField(User user,String field,Object value){
-        firebaseRepository.deleteField(user,field,value);
     }
     public LiveData<Boolean> setChoice(Restaurant restaurant){
         return firebaseRepository.setChoice(restaurant);

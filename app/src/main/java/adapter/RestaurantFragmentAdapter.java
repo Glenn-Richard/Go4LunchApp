@@ -14,8 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +24,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
-import MVVM.FirebaseRepository;
 import MVVM.GeneralViewModel;
 import models.Restaurant;
 import pl.droidsonroids.gif.GifImageView;
@@ -38,7 +35,6 @@ public class RestaurantFragmentAdapter extends  RecyclerView.Adapter<RestaurantF
     ArrayList<Restaurant> restaurants;
     ItemListener listener;
     LatLng currentLocation;
-    ViewModel viewModel;
 
     public RestaurantFragmentAdapter(Context context, ArrayList<Restaurant> restaurants,ItemListener listener,LatLng currentLocation) {
         this.context = context;

@@ -163,6 +163,7 @@ public class FirebaseRepository {
 
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user1 = auth.getCurrentUser();
+        String value = restaurant.getPlace_id();
 
         reference.document(Objects.requireNonNull(user1).getUid())
                 .get()
@@ -170,20 +171,16 @@ public class FirebaseRepository {
                     if (documentSnapshot.exists()){
                         User user = documentSnapshot.toObject(User.class);
                         if (user.getFavorites()!=null){
-                            String value = restaurant.getPlace_id();
-                            if (user.getFavorites()==null) {
+                            if (user.getFavorites().contains(restaurant.getPlace_id())){
+                                deleteFavoritesField(user,"favorites",value);
+                                isFav.postValue(false);
+                            }else{
                                 updateFavoritesUser(user, "favorites", value);
                                 isFav.postValue(true);
-                            } else {
-                                if (user.getFavorites().contains(restaurant.getPlace_id())){
-                                    deleteFavoritesField(user,"favorites",value);
-                                    isFav.postValue(false);
-                                }else{
-                                    updateFavoritesUser(user, "favorites", value);
-                                    isFav.postValue(true);
-                                }
-
                             }
+                        }else{
+                            updateFavoritesUser(user, "favorites", value);
+                            isFav.postValue(true);
                         }
                     }
                 });
@@ -215,9 +212,12 @@ public class FirebaseRepository {
 
         List<User> users = this.users.getValue();
         boolean found = false;
-        for (int i = 0; i< Objects.requireNonNull(users).size()-1; i++){
-            if (users.get(i).getId().equals(user.getUid())){
-                found = true;
+
+        if (users != null) {
+            for (User user1 : users){
+                if (user1.getId().equals(user.getUid())){
+                    found = true;
+                }
             }
         }
         if(!found){

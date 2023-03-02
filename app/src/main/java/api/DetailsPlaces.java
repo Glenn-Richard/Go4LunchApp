@@ -8,13 +8,14 @@ import models.Restaurant;
 public class DetailsPlaces {
     @SerializedName("result")
     @Expose
-    private Restaurant restaurantsDetails;
+    private final Restaurant restaurantsDetails;
+
+    public DetailsPlaces(Restaurant restaurantsDetails) {
+        this.restaurantsDetails = restaurantsDetails;
+    }
 
     public Restaurant getRestaurantsDetails() {
         return restaurantsDetails;
     }
 
-    public void setRestaurantsDetails(Restaurant restaurantsDetails) {
-        this.restaurantsDetails = restaurantsDetails;
-    }
 }
